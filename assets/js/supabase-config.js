@@ -1,6 +1,4 @@
-/* Supabase connection. Fill in from Supabase → Project Settings → API.
-   The anon (public) key is safe to ship in the browser: Row Level Security in supabase/schema.sql
-   is what protects the data. NEVER put the service_role key in this file. */
+/* Supabase Connection */
 window.NICER_SUPABASE = {
   url: "https://ipbcktmoacbpfuxitzyx.supabase.co",
   anonKey: "sb_publishable_3VNDMjxWESoV030AfE75ZQ_SD4FIu_P"

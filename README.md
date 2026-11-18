@@ -7,7 +7,7 @@ Plain HTML, CSS and JavaScript. No build step, no dependencies. Open `index.html
 - `programmes/` holds the five programme pages
 - `assets/css/styles.css` holds the whole design system (colour tokens are at the top of the file)
 - `assets/js/main.js` handles the dropdown menus, mobile menu, tabs, hero animation and contact form
-- `assets/img/` holds the logo variants and favicon; `assets/fonts/` holds the self-hosted fonts
+- `assets/img/` holds the logo variants and favicon; `assets/fonts/` holds the self-hosted fonts (Montserrat, Lato)
 
 ## Brand colours (from the NiCER logo)
 Navy `#032241` · Green `#95C21D` · Orange `#F38406`
@@ -34,3 +34,9 @@ New files: `signin.html`, `noticeboard.html`, `admin.html`, `assets/js/{supabase
 4. Create an account on `signin.html`, then make it an admin with the SQL at the bottom of `schema.sql`.
 Admins add and manage notices at `admin.html`. Signed-in members read them at `noticeboard.html`. Security is enforced by Row Level Security, not by the pages.
 The nav "Sign in", "Create an account" and "Admin dashboard" links now point at these pages. All "Notice Board" links now point at `noticeboard.html`. Signed-out visitors are sent to `signin.html` and returned to the board after signing in. "Share an opportunity" points to the contact page, since only admins post notices.
+
+## Fonts
+Body text is Montserrat (variable) and headings are Lato Bold 700, both self-hosted in `assets/fonts/`. They are set by `--font-ui` and `--font-display` at the top of `assets/css/styles.css`.
+
+## Psychometric test
+`assessment.html` + `assets/js/assessment.js`. Fifteen statements (3 per programme) on a 5-point scale; the programme with the highest score is recommended, and near-ties are shown as "also a strong fit". Questions, programme descriptions and the start links are at the top of `assessment.js`. Nothing is stored or sent. It is linked from the Programmes menu (desktop and mobile) and the footer on every page.
