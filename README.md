@@ -24,3 +24,13 @@ Partners currently show as text. To show a logo, replace the text with an image,
 
 ## Contact form
 There is no server. The form opens the visitor's email app with the message filled in. To receive messages directly, point the form at a form service.
+
+
+## Notice Board, sign in and admin (Supabase)
+New files: `signin.html`, `noticeboard.html`, `admin.html`, `assets/js/{supabase-config,auth,signin,noticeboard,admin}.js`, `assets/css/app.css`, `supabase/schema.sql`.
+1. Create a Supabase project, then run `supabase/schema.sql` in the SQL Editor.
+2. Put the project URL and anon key in `assets/js/supabase-config.js` (never the service_role key).
+3. In Supabase → Authentication → URL Configuration, add the site's address (and `http://localhost:PORT` for testing) to Site URL / Redirect URLs.
+4. Create an account on `signin.html`, then make it an admin with the SQL at the bottom of `schema.sql`.
+Admins add and manage notices at `admin.html`. Signed-in members read them at `noticeboard.html`. Security is enforced by Row Level Security, not by the pages.
+The nav "Sign in", "Create an account" and "Admin dashboard" links now point at these pages. All "Notice Board" links now point at `noticeboard.html`. Signed-out visitors are sent to `signin.html` and returned to the board after signing in. "Share an opportunity" points to the contact page, since only admins post notices.
