@@ -51,7 +51,7 @@ create trigger on_auth_user_created
 create table if not exists public.notices (
   id           uuid primary key default gen_random_uuid(),
   title        text not null check (char_length(title) between 3 and 160),
-  category     text not null check (category in ('job', 'funding', 'programme', 'event', 'announcement')),
+  category     text not null check (category in ('job', 'funding', 'learnership', 'scholarship', 'bursary', 'programme', 'event', 'announcement')),
   organisation text check (char_length(organisation) <= 160),
   location     text check (char_length(location) <= 160),
   body         text not null check (char_length(body) between 1 and 5000),
@@ -98,6 +98,39 @@ create policy "admins update notices" on public.notices
 
 drop policy if exists "admins delete notices" on public.notices;
 create policy "admins delete notices" on public.notices
+  for delete to authenticated
+  using (public.is_admin());
+
+-- Existing databases: widen the category list to include learnerships, scholarships and bursaries.
+alter table public.notices drop constraint if exists notices_category_check;
+alter table public.notices add constraint notices_category_check
+  check (category in ('job', 'funding', 'learnership', 'scholarship', 'bursary', 'programme', 'event', 'announcement'));
+
+-- ---------- programme sign-ups ----------
+-- Anyone can submit the Sign Up form on a programme page. Only admins can read or delete the entries.
+create table if not exists public.programme_signups (
+  id         uuid primary key default gen_random_uuid(),
+  programme  text not null check (char_length(programme) between 2 and 120),
+  full_name  text not null check (char_length(full_name) between 2 and 120),
+  email      text not null check (char_length(email) between 5 and 200 and email ~* '^[^@\s]+@[^@\s]+\.[^@\s]+$'),
+  phone      text not null check (char_length(phone) between 7 and 30),
+  created_at timestamptz not null default now()
+);
+alter table public.programme_signups enable row level security;
+grant insert on public.programme_signups to anon, authenticated;
+
+drop policy if exists "anyone can sign up" on public.programme_signups;
+create policy "anyone can sign up" on public.programme_signups
+  for insert to anon, authenticated
+  with check (true);
+
+drop policy if exists "admins read signups" on public.programme_signups;
+create policy "admins read signups" on public.programme_signups
+  for select to authenticated
+  using (public.is_admin());
+
+drop policy if exists "admins delete signups" on public.programme_signups;
+create policy "admins delete signups" on public.programme_signups
   for delete to authenticated
   using (public.is_admin());
 

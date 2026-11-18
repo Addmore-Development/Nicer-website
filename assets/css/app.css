@@ -87,3 +87,56 @@
 .bar__track{height:10px;background:var(--navy-100);border-radius:999px;overflow:hidden}
 .bar__fill{height:100%;background:var(--navy-300);border-radius:999px}
 .bar.is-top .bar__fill{background:var(--orange-500)}
+
+/* ---------- programme page: calls to action + sign-up ---------- */
+.pcta{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+.pcta__side{display:grid;gap:20px}
+.pcta__card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(22px,3vw,34px);display:grid;gap:14px;justify-items:start}
+.pcta__card h3{font-size:1.35rem}
+.pcta__card p{margin:0}
+.pcta__card--form{border-color:var(--green-500);box-shadow:0 0 0 3px var(--green-100);justify-items:stretch}
+.pcta__card--form .btn{justify-self:start}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+@media(max-width:900px){.pcta{grid-template-columns:1fr}}
+
+/* ---------- partner logos ---------- */
+.partner.has-logo span,.logos__c.has-logo span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.logos__c img{max-height:56px}
+.logos__c{position:relative}
+
+/* ---------- admin dashboard (modelled on the earlier NiCER admin control centre) ---------- */
+.dash{display:grid;grid-template-columns:260px minmax(0,1fr);gap:clamp(18px,2.4vw,32px);align-items:start}
+.dash__side{position:sticky;top:96px;display:grid;gap:22px;background:linear-gradient(180deg,var(--navy-800),var(--navy-900));color:#C9D7E6;border-radius:var(--r-lg);padding:22px}
+.dash__brand{display:grid;gap:10px;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,.14)}
+.dash__brand img{background:#fff;border-radius:10px;padding:8px 10px;width:auto;height:44px}
+.dash__brand span{font-size:var(--fs-small)}
+.dash__nav{display:grid;gap:4px}
+.dash__nav button,.dash__nav a{font:inherit;font-weight:600;text-align:left;color:#C9D7E6;background:transparent;border:0;border-radius:12px;padding:12px 14px;min-height:44px;cursor:pointer;text-decoration:none;display:block}
+.dash__nav button:hover,.dash__nav a:hover{background:rgba(255,255,255,.08);color:#fff}
+.dash__nav button[aria-current="page"]{background:rgba(255,255,255,.14);color:#fff;box-shadow:inset 3px 0 0 var(--green-500)}
+.dash__nav :focus-visible{outline:none;box-shadow:0 0 0 3px rgba(243,132,6,.6)}
+.dash__user{display:grid;gap:2px;padding-top:16px;border-top:1px solid rgba(255,255,255,.14);font-size:var(--fs-small)}
+.dash__user strong{color:#fff;overflow-wrap:anywhere}
+.dash__main{display:grid;gap:20px;min-width:0}
+.dview{display:grid;gap:20px}
+.dhead{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(20px,3vw,30px)}
+.dhead h2{font-size:clamp(1.6rem,1.3rem + 1vw,2.1rem)}
+.dhead p{margin:6px 0 0}
+.dcard{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(20px,3vw,30px);min-width:0}
+.dcard h3{font-size:1.3rem;margin-bottom:12px}
+.dgrid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.stat{background:#fff;border:1px solid var(--line);border-top:4px solid var(--green-500);border-radius:var(--r-md);padding:18px 20px;display:grid;gap:4px}
+.stat span{font-size:var(--fs-small);color:var(--muted)}
+.stat b{font-family:var(--font-display);font-size:2.2rem;line-height:1.1;color:var(--navy-800)}
+.stat small{color:var(--green-700);font-weight:600}
+.stat--warn{border-top-color:var(--orange-500)}.stat--warn small{color:var(--orange-700)}
+.dtools{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr);gap:14px;margin-bottom:10px}
+.adrow .adrow__sub{color:var(--muted);font-size:var(--fs-small)}
+.badge--draft{background:var(--orange-100);color:var(--orange-700)}
+.tablewrap{overflow-x:auto}
+.dtable{width:100%;border-collapse:collapse;font-size:var(--fs-small)}
+.dtable th{text-align:left;background:var(--soft);color:var(--navy-800);padding:12px 14px;font-weight:700;white-space:nowrap}
+.dtable td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere}
+.dtable td.nw{white-space:nowrap}
+@media(max-width:1000px){.dash{grid-template-columns:1fr}.dash__side{position:static}.dash__nav{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.dgrid,.dtools{grid-template-columns:1fr}}

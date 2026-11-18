@@ -3,8 +3,8 @@
   "use strict";
   var A = window.NicerAuth, el = A.el, $ = function (id) { return document.getElementById(id); };
   var all = [], cat = "all", q = "";
-  var ORDER = ["job", "funding", "programme", "event", "announcement"];
-  var PLURAL = { job: "Jobs", funding: "Funding", programme: "Programmes", event: "Events", announcement: "Announcements" };
+  var ORDER = ["job", "funding", "learnership", "scholarship", "bursary", "programme", "event", "announcement"];
+  var PLURAL = A.plural;
 
   function gate(text, linkText, href) {
     var g = $("nb-gate"); g.hidden = false; g.textContent = "";
