@@ -73,6 +73,7 @@
     var user = await A.getUser();
     if (!user) { window.location.replace("signin.html?next=noticeboard.html"); return; }
     var profile = await A.getProfile(user);
+    if (profile && profile.full_name) $("nb-title").textContent = "Welcome, " + profile.full_name;
     if (profile && profile.role === "admin") $("nb-admin").hidden = false;
     var r = await A.sb.from("notices").select("*").order("pinned", { ascending: false }).order("created_at", { ascending: false });
     if (r.error) { gate("We couldn't load the notices. Please refresh and try again."); return; }
