@@ -18,12 +18,12 @@ $sites = [ordered]@{
   "icatalysis-hub"  = "https://za.linkedin.com/company/icatalysis-hub"
 }
 # Known direct URLs win over scraping
-$direct = @{ "sasol" = "https://www.sasol.com/sites/default/files/sasol-new-logo_0.png" }
+$direct = @{ "sasol" = "https://www.sasol.com/sites/default/files/sasol-new-logo_0.png"; "uj-education" = "https://www.uj.ac.za/wp-content/uploads/2026/03/uj_logo.jpg" }
 
 function Save-Logo($slug, $url) {
   $tmp = Join-Path $env:TEMP ("logo_" + [guid]::NewGuid().ToString("N"))
   try {
-    Invoke-WebRequest -Uri $url -Headers $ua -OutFile $tmp -UseBasicParsing -TimeoutSec 30
+    Invoke-WebRequest -Uri $url -Headers ($ua + @{ "Referer" = ([Uri]$url).GetLeftPart("Authority") + "/" }) -OutFile $tmp -UseBasicParsing -TimeoutSec 30
     $b = [IO.File]::ReadAllBytes($tmp); if ($b.Length -lt 100) { throw "file too small" }
     $head = [Text.Encoding]::ASCII.GetString($b[0..([Math]::Min(255,$b.Length-1))])
     if     ($b[0] -eq 0x89 -and $b[1] -eq 0x50) { $ext = ".png" }

@@ -141,7 +141,7 @@
     var slug = slot.getAttribute("data-logo"), exts = ["svg", "png", "webp", "jpg", "jpeg", "gif", "avif"], name = slot.textContent.trim();
     (function tryNext(i) {
       if (i >= exts.length) return;
-      var img = new Image(); img.alt = name; img.decoding = "async"; img.loading = "lazy";
+      var img = new Image(); img.alt = name; img.decoding = "async";
       img.onload = function () { slot.insertBefore(img, slot.firstChild); slot.classList.add("has-logo"); };
       img.onerror = function () { tryNext(i + 1); };
       img.src = base + "assets/partners/" + slug + "." + exts[i];
