@@ -633,7 +633,7 @@ body.nav-lock .nav-toggle{background:rgba(255,255,255,.14)}
    A navy card with the white logo stays readable whether or not the browser darkens the page. */
 @media (max-width:1100px){
   .nav-card{background:var(--navy-800);border:1px solid rgba(255,255,255,.14);box-shadow:0 14px 34px -16px rgba(2,24,48,.7)}
-  .brand__dark{display:none}
-  .brand__light{display:block}
+  .brand img,.brand__dark,.brand__light{display:none!important}
+  .brand{width:182px;height:46px;background:url("../img/logo-light.png") no-repeat left center/contain}
   .nav-toggle{background:rgba(255,255,255,.14)}
 }
