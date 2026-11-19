@@ -13,7 +13,7 @@ Plain HTML, CSS and JavaScript. No build step, no dependencies. Open `index.html
 Navy `#032241` · Green `#95C21D` · Orange `#F38406`
 
 ## Platform links
-The Notice Board, Academy and Marketplace links point to `noticeboard.nicer.org`, `academy.nicer.org` and `shop.nicer.org`.
+The Notice Board, Academy and Marketplace links point to `noticeboard.nicer.org`, `academy.nicer.org` and `marketplace.nicer.org`.
 To change an address, search the folder for that address and replace it.
 Sign in, Create an account and Admin dashboard are not live yet. They appear as `href="#" data-pending="..."` and show a short "will open here once the platform goes live" message.
 When the real addresses exist, replace `href="#" data-pending="Sign in"` with the real `href` (search for `data-pending`).
@@ -48,12 +48,3 @@ Body text is Montserrat (variable) and headings are Lato Bold 700, both self-hos
 - **Admin**: `admin.html` + `assets/css/admin.css` + `assets/js/admin.js`. Views: Dashboard, Notice Board, News & Events, Partner logos, Sign-ups, Reports (CSV exports).
 - **Mobile logo**: pages declare `color-scheme: only light`, and the open mobile menu uses the white logo on a navy card.
 - **Database**: run the updated `supabase/schema.sql` once (adds `news`, `partners`, and the `site-media` storage bucket).
-
-Drop the original partner logos in this folder. The site picks them up automatically
-(home page partner strip and Partners page grid); a partner without a file keeps its text name.
-
-Name each file exactly as below, as .svg (preferred), .png, .webp or .jpg:
-sasol, gauteng-e-government, usaf, edhe, studytrust, bellatrix, mtn, adopt-a-school,
-univen, vhembe-district, wibc, icatalysis-hub, khoro, uj-education
-
-Tip: run get-logos.ps1 from the project root to fetch the logos for MTN, Sasol, Univen, USAf, EDHE, UJ Education and Vhembe automatically, then check each one.
