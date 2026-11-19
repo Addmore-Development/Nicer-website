@@ -255,3 +255,22 @@
 .logos__c[data-logo="khoro"],.pstrip__c[data-logo="khoro"],.partner[data-logo="khoro"]{background:var(--navy-900,#08203A)!important;border-color:var(--navy-900,#08203A)!important}
 .partner[data-logo="khoro"].has-logo{padding:6px 14px;border-radius:12px}
 .pstrip__c[data-logo="khoro"].has-logo img,.partner[data-logo="khoro"].has-logo img{max-height:44px}
+
+/* ---------- Programme pages: one call to action per programme ---------- */
+.pcta--single{grid-template-columns:minmax(0,680px)}
+@media(max-width:900px){.pcta--single{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- Psychometric test pop-up (assessment-modal.js) ---------- */
+html.amodal-lock{overflow:hidden}
+.amodal{position:fixed;inset:0;margin:auto;width:min(720px,calc(100vw - 24px));max-width:none;max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);padding:0;border:0;border-radius:var(--r-lg);background:#fff;color:var(--text);box-shadow:0 40px 90px -30px rgba(2,24,48,.65);overflow:hidden}
+.amodal::backdrop{background:rgba(3,34,65,.62);backdrop-filter:blur(3px)}
+.amodal[open]{animation:amodal-in .28s var(--ease)}
+@keyframes amodal-in{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.amodal[open]{animation:none}}
+.amodal__panel{max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;padding:clamp(22px,4vw,40px);display:grid;gap:18px}
+.amodal__close{position:absolute;top:14px;right:14px;z-index:2;width:44px;height:44px;display:grid;place-items:center;border:1.5px solid var(--line);border-radius:50%;background:#fff;color:var(--navy-900);cursor:pointer;transition:background .15s,border-color .15s}
+.amodal__close:hover{background:var(--soft);border-color:var(--navy-700)}
+.amodal__close:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(243,132,6,.35)}
+.amodal__kicker{margin:0;padding-right:56px;font-weight:700;font-size:var(--fs-xs);letter-spacing:.08em;text-transform:uppercase;color:var(--orange-700)}
+.amodal .test__card{background:transparent;border:0;border-radius:0;box-shadow:none;padding:0}
+@media(max-width:520px){.amodal{width:calc(100vw - 16px);max-height:calc(100dvh - 16px)}.amodal__panel{max-height:calc(100dvh - 16px)}}

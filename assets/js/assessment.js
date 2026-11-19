@@ -2,7 +2,14 @@
    Nothing is sent or stored: answers live in this page only. */
 (function () {
   "use strict";
-  var $ = function (id) { return document.getElementById(id); };
+
+  /* Works on assessment.html (page mode) and inside the pop-up opened by assessment-modal.js.
+     BASE is the path from the current page back to the site root, so result links work from /programmes/ too. */
+  var BASE = (function () {
+    var s = document.currentScript, src = s && s.getAttribute("src");
+    if (src) return src.replace(/assets\/js\/assessment\.js.*$/, "");
+    return /\/programmes\/[^\/]*$/.test(location.pathname) ? "../" : "";
+  })();
 
   var PROGRAMMES = {
     network: {
@@ -57,12 +64,16 @@
   ];
   var SCALE = ["Strongly disagree", "Disagree", "Neutral", "Agree", "Strongly agree"];
 
+  function init(root, opts) {
+  opts = opts || {};
+  var $ = function (id) { return root.querySelector("#" + id); };
   var answers = new Array(QUESTIONS.length), idx = 0;
   var views = { intro: $("t-intro"), quiz: $("t-quiz"), result: $("t-result") };
   function show(name) {
     Object.keys(views).forEach(function (k) { views[k].hidden = k !== name; });
     var h = views[name].querySelector("[data-focus]"); if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); }
-    views[name].scrollIntoView({ behavior: "smooth", block: "start" });
+    if (opts.onShow) opts.onShow(name, views[name]);
+    else views[name].scrollIntoView({ behavior: "smooth", block: "start" });
   }
   function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
 
@@ -114,7 +125,7 @@
         ? "No single programme scored strongly, but " + P.name + " came out slightly ahead. Browse all five to see which feels right."
         : P.why;
     }
-    $("r-open").setAttribute("href", flat ? "programmes.html" : P.href);
+    $("r-open").setAttribute("href", BASE + (flat ? "programmes.html" : P.href));
     $("r-open").textContent = flat ? "Browse all programmes" : "Explore " + P.name;
 
     var alsoBox = $("r-also"); alsoBox.textContent = "";
@@ -124,7 +135,7 @@
     } else alsoBox.hidden = true;
 
     var st = $("r-start"); st.textContent = "";
-    P.start.forEach(function (s) { var li = el("li"), a = el("a", "link", s[0]); a.href = s[1]; li.appendChild(a); st.appendChild(li); });
+    P.start.forEach(function (s) { var li = el("li"), a = el("a", "link", s[0]); a.href = BASE + s[1]; li.appendChild(a); st.appendChild(li); });
 
     var bars = $("r-bars"); bars.textContent = "";
     ranked.forEach(function (r) {
@@ -142,5 +153,11 @@
     if (idx < QUESTIONS.length - 1) { idx++; renderQuestion(); } else renderResult();
   });
   $("t-back").addEventListener("click", function () { if (idx > 0) { idx--; renderQuestion(); } });
-  $("t-retake").addEventListener("click", function () { answers = new Array(QUESTIONS.length); idx = 0; show("intro"); });
+  function reset() { answers = new Array(QUESTIONS.length); idx = 0; show("intro"); }
+  $("t-retake").addEventListener("click", reset);
+  return { reset: reset };
+  }
+
+  window.NICERAssessment = { init: init };
+  if (document.getElementById("t-intro")) init(document);   /* assessment.html: start straight away */
 })();
