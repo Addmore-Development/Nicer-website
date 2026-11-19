@@ -136,14 +136,15 @@
 
 
   /* ---------- partner logos: use assets/partners/<slug>.(svg|png|webp|jpg) when the file exists, otherwise keep the text name ---------- */
+  var selfScript = doc.querySelector('script[src*="assets/js/main.js"]'), base = selfScript ? selfScript.getAttribute("src").replace(/assets\/js\/main\.js.*$/, "") : "";
   Array.prototype.forEach.call(doc.querySelectorAll("[data-logo]"), function (slot) {
-    var slug = slot.getAttribute("data-logo"), exts = ["svg", "png", "webp", "jpg"], name = slot.textContent.trim();
+    var slug = slot.getAttribute("data-logo"), exts = ["svg", "png", "webp", "jpg", "jpeg", "gif", "avif"], name = slot.textContent.trim();
     (function tryNext(i) {
       if (i >= exts.length) return;
       var img = new Image(); img.alt = name; img.decoding = "async"; img.loading = "lazy";
       img.onload = function () { slot.insertBefore(img, slot.firstChild); slot.classList.add("has-logo"); };
       img.onerror = function () { tryNext(i + 1); };
-      img.src = "assets/partners/" + slug + "." + exts[i];
+      img.src = base + "assets/partners/" + slug + "." + exts[i];
     })(0);
   });
 
