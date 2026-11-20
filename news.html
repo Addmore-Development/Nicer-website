@@ -15,6 +15,7 @@
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/css/styles.css">
 <link rel="stylesheet" href="assets/css/app.css">
+<link rel="stylesheet" href="assets/css/news.css">
 <script>document.documentElement.className="js"</script>
 
 </head>
@@ -113,14 +114,32 @@
 <ol class="crumbs" aria-label="Breadcrumb"><li><a href="index.html">Home</a></li><li aria-current="page">News &amp; Events</li></ol>
 <h1>News and Events</h1><p class="lead">Announcements, events and updates from across the NiCER network, with resources for journalists and partners.</p></div></section>
 
-<section class="section" id="latest"><div class="wrap">
- <div class="nm-bar"><div class="nm-chips" id="nm-chips" role="group" aria-label="Filter by type" hidden></div></div>
+<section class="section nm-top" id="latest"><div class="wrap">
+ <div class="nm-demo" id="nm-demo" hidden><span class="badge">Sample content</span><p>A preview of how News and Events will look. Posts added in the admin dashboard replace these automatically.</p></div>
+ <div class="nm-spot" id="nm-spot" hidden></div>
+ <div class="nm-tools">
+  <div class="nm-tabs" id="nm-tabs" role="group" aria-label="Filter by type"></div>
+  <div class="nm-tools__r">
+   <label class="nm-search"><span class="sr-only">Search news and events</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input id="nm-q" type="search" placeholder="Search news and events" autocomplete="off"></label>
+   <label class="nm-sort"><span class="sr-only">Sort order</span><select id="nm-sort"><option value="new">Newest first</option><option value="old">Oldest first</option></select></label>
+   <div class="nm-view" role="group" aria-label="Layout">
+    <button type="button" id="nm-v-grid" aria-pressed="true" aria-label="Card layout"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></button>
+    <button type="button" id="nm-v-list" aria-pressed="false" aria-label="List layout"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="4.5" rx="1.5"/><rect x="3.5" y="15" width="17" height="4.5" rx="1.5"/></svg></button>
+   </div>
+  </div>
+ </div>
+ <div class="nm-active" id="nm-active" hidden></div>
  <div id="nm-status" role="status" aria-live="polite" class="sr-only"></div>
- <div class="nm-grid" id="nm-grid" aria-busy="true"><div class="nm-skel"></div><div class="nm-skel"></div><div class="nm-skel"></div></div>
- <div class="nm-empty" id="nm-empty" hidden>
-  <h3>Updates will appear here</h3>
-  <p id="nm-empty-text">There is nothing to show yet. New announcements, events and publications are added by the NiCER team as they happen.</p>
-  <a class="btn btn--outline" href="contact.html">Share a story with NiCER</a>
+ <div class="nm-layout" id="nm-layout">
+  <div class="nm-main">
+   <div class="nm-grid" id="nm-grid" aria-busy="true"><div class="nm-skel"></div><div class="nm-skel"></div><div class="nm-skel"></div></div>
+   <div class="nm-empty" id="nm-empty" hidden>
+    <h3 id="nm-empty-h">Updates will appear here</h3>
+    <p id="nm-empty-text">There is nothing to show yet. New announcements, events and publications are added by the NiCER team as they happen.</p>
+    <div class="nm-empty__act"><button class="btn btn--primary btn--sm" type="button" id="nm-clear" hidden>Clear filters</button><a class="btn btn--outline btn--sm" href="contact.html">Share a story with NiCER</a></div>
+   </div>
+  </div>
+  <aside class="nm-cal" id="nm-cal" aria-label="Events calendar" hidden></aside>
  </div>
 </div></section>
 
@@ -152,7 +171,14 @@
 </main>
 <dialog class="nm-dlg" id="nm-dlg" aria-labelledby="nm-dlg-title"><button class="nm-dlg__x" type="button" id="nm-dlg-x" aria-label="Close">&times;</button>
  <div class="nm-dlg__img" id="nm-dlg-img"></div>
- <div class="nm-dlg__in"><div class="nm-card__meta" id="nm-dlg-meta"></div><h2 id="nm-dlg-title"></h2><div class="nm-dlg__body" id="nm-dlg-body"></div><p id="nm-dlg-link"></p></div></dialog>
+ <div class="nm-dlg__in">
+  <div class="nm-card__meta" id="nm-dlg-meta"></div>
+  <h2 id="nm-dlg-title"></h2>
+  <dl class="nm-dlg__facts" id="nm-dlg-facts" hidden></dl>
+  <div class="nm-dlg__body" id="nm-dlg-body"></div>
+  <div class="nm-dlg__act" id="nm-dlg-link"></div>
+  <div class="nm-dlg__nav"><button type="button" class="nm-link" id="nm-prev">&larr; Previous</button><span id="nm-msg" role="status" aria-live="polite"></span><button type="button" class="nm-link" id="nm-next">Next &rarr;</button></div>
+ </div></dialog>
 <footer class="footer"><div class="wrap">
 <div class="footer__grid">
  <div class="footer__brand"><img src="assets/img/logo-light.png" alt="NiCER" width="214" height="54">
