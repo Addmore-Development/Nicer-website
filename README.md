@@ -48,3 +48,11 @@ Body text is Montserrat (variable) and headings are Lato Bold 700, both self-hos
 - **Admin**: `admin.html` + `assets/css/admin.css` + `assets/js/admin.js`. Views: Dashboard, Notice Board, News & Events, Partner logos, Sign-ups, Reports (CSV exports).
 - **Mobile logo**: pages declare `color-scheme: only light`, and the open mobile menu uses the white logo on a navy card.
 - **Database**: run the updated `supabase/schema.sql` once (adds `news`, `partners`, and the `site-media` storage bucket).
+
+## Notice Board v3: live opportunities (no admin)
+`noticeboard.html` now shows opportunities pulled from the internet instead of notices posted by an admin. It is public (no sign-in) and lays out as hero + category pills, Latest Opportunities, the full Opportunities grid and a Share an Opportunity block.
+- `api/opportunities.js` is a Vercel serverless function. It reads the public RSS feeds listed in `SOURCES` at the top of the file, sorts items into Jobs, Funding, Learnerships (incl. internships), Scholarships, Bursaries, Programmes and Events, drops expired or stale items, removes duplicates and returns JSON. Results are cached for an hour. Add/remove sources by editing `SOURCES`.
+- Optional extra jobs: set `ADZUNA_APP_ID` and `ADZUNA_APP_KEY` in Vercel > Project > Settings > Environment Variables (free key from developer.adzuna.com).
+- `GET /api/opportunities` also returns a `sources` list showing which feeds worked, so a dead feed is easy to spot.
+- Live Server (port 5500) cannot run `/api`. Test locally with `npx vercel dev`, or set `window.NICER_API_BASE` in `noticeboard.html` to your deployed URL.
+- `assets/js/noticeboard.js` and `assets/css/noticeboard.css` replace the old Supabase-based board.

@@ -1,89 +1,66 @@
-/* NiCER — Notice Board (signed-in members). Access is enforced by Row Level Security; this page only renders. */
+/* NiCER Notice Board: shows live opportunities from /api/opportunities (see api/opportunities.js). */
 (function () {
   "use strict";
-  var A = window.NicerAuth, el = A.el, $ = function (id) { return document.getElementById(id); };
-  var all = [], cat = "all", q = "";
-  var ORDER = ["job", "funding", "learnership", "scholarship", "bursary", "programme", "event", "announcement"];
-  var PLURAL = A.plural;
+  var CATS = { job: "Jobs", funding: "Funding", learnership: "Learnerships", scholarship: "Scholarships", bursary: "Bursaries", programme: "Programmes", event: "Events" };
+  var ONE = { job: "Job", funding: "Funding", learnership: "Learnership", scholarship: "Scholarship", bursary: "Bursary", programme: "Programme", event: "Event" };
+  var API = (window.NICER_API_BASE || "") + "/api/opportunities", PAGE = 24;
+  var all = [], cat = "all", shown = PAGE, $ = function (i) { return document.getElementById(i); };
 
-  function gate(text, linkText, href) {
-    var g = $("nb-gate"); g.hidden = false; g.textContent = "";
-    g.appendChild(el("p", null, text));
-    if (linkText) { var a = el("a", "btn btn--primary btn--sm", linkText); a.href = href; g.appendChild(a); }
-  }
+  function el(t, c, x) { var n = document.createElement(t); if (c) n.className = c; if (x != null) n.textContent = x; return n; }
+  function fmt(s) { return new Date(s.length === 10 ? s + "T00:00:00" : s).toLocaleDateString("en-ZA", { day: "numeric", month: "long", year: "numeric" }); }
+  function when(n) { return n.deadline ? "Closes " + fmt(n.deadline) : "Posted " + fmt(n.published); }
+  function meta(n) { return [n.organisation || n.source, ONE[n.category], when(n)].join(" • "); }
+  function safe(u) { try { var x = new URL(u); return /^https?:$/.test(x.protocol) ? x.href : null; } catch (e) { return null; } }
 
   function card(n) {
-    var c = el("article", "notice" + (n.pinned ? " is-pinned" : ""));
-    var top = el("div", "notice__top");
-    top.appendChild(el("span", "badge badge--navy", A.categories[n.category] || n.category));
-    var closed = n.deadline && n.deadline < new Date().toISOString().slice(0, 10);
-    if (n.pinned) top.appendChild(el("span", "badge badge--green", "Pinned"));
-    if (closed) top.appendChild(el("span", "badge", "Closed"));
-    c.appendChild(top);
-    c.appendChild(el("h3", null, n.title));
-    var meta = [n.organisation, n.location].filter(Boolean).join(" · ");
-    if (meta) c.appendChild(el("p", "notice__meta", meta));
-    c.appendChild(el("p", "notice__body", n.body));
-    var foot = el("div", "notice__foot");
-    foot.appendChild(el("span", "notice__date", n.deadline ? "Deadline: " + A.fmtDate(n.deadline) : "Posted " + A.fmtDate(n.created_at.slice(0, 10))));
-    var url = n.link_url && A.safeUrl(n.link_url);
-    if (url) { var a = el("a", "link", "Learn more"); a.href = url; a.target = "_blank"; a.rel = "noopener noreferrer"; foot.appendChild(a); }
-    c.appendChild(foot);
-    return c;
+    var c = el("article", "card");
+    if (Date.now() - new Date(n.published) < 7 * 864e5) c.appendChild(el("span", "badge", "New"));
+    c.appendChild(el("h3", null, n.title)); c.appendChild(el("p", "meta", meta(n)));
+    var b = el("button", "btn", "View Details"); b.type = "button"; b.addEventListener("click", function () { detail(n); });
+    c.appendChild(b); return c;
   }
-
+  function detail(n) {
+    var d = $("nb-dlg"), u = safe(n.url); d.textContent = "";
+    d.appendChild(el("span", "badge", ONE[n.category])); d.appendChild(el("h3", null, n.title));
+    d.appendChild(el("p", "meta", [n.organisation || n.source, n.location, when(n)].filter(Boolean).join(" • ")));
+    if (n.summary) d.appendChild(el("p", null, n.summary));
+    d.appendChild(el("p", "note", "Listing found on " + n.source + ". Check the details on the original page before you apply, and never pay to apply for a job, learnership or bursary."));
+    var r = el("div", "row");
+    if (u) { var a = el("a", "btn", "View on " + n.source); a.href = u; a.target = "_blank"; a.rel = "noopener noreferrer"; r.appendChild(a); }
+    var x = el("button", "btn alt", "Close"); x.type = "button"; x.addEventListener("click", function () { d.close(); }); r.appendChild(x);
+    d.appendChild(r); d.showModal();
+  }
+  function latest(list) {
+    var by = {}, out = [], keys; list.forEach(function (n) { (by[n.category] = by[n.category] || []).push(n); }); keys = Object.keys(by);
+    for (var i = 0; out.length < 6 && i < 6; i++) keys.forEach(function (k) { if (out.length < 6 && by[k][i]) out.push(by[k][i]); });
+    return out.sort(function (a, b) { return new Date(b.published) - new Date(a.published); });
+  }
+  function fill(id, list) { var g = $(id); g.textContent = ""; list.forEach(function (n) { g.appendChild(card(n)); }); }
   function render() {
-    var list = $("nb-list"); list.textContent = "";
-    var term = q.toLowerCase(), total = 0;
-    var rows = all.filter(function (n) {
-      return !term || [n.title, n.body, n.organisation, n.location].join(" ").toLowerCase().indexOf(term) !== -1;
-    });
-    ORDER.forEach(function (k) {
-      if (cat !== "all" && cat !== k) return;
-      var group = rows.filter(function (n) { return n.category === k; });
-      if (!group.length) return;
-      total += group.length;
-      var sec = el("section", "nb-section"); sec.setAttribute("aria-labelledby", "sec-" + k);
-      var h = el("h2", null, PLURAL[k]); h.id = "sec-" + k;
-      var head = el("div", "nb-section__head"); head.appendChild(h);
-      head.appendChild(el("span", "nb-section__n", group.length + (group.length === 1 ? " notice" : " notices")));
-      sec.appendChild(head);
-      var grid = el("div", "nb-grid");
-      group.forEach(function (n) { grid.appendChild(card(n)); });
-      sec.appendChild(grid); list.appendChild(sec);
-    });
-    $("nb-count").textContent = "";
-    $("nb-empty").textContent = cat === "all" ? "No notices match your search yet." : "No " + PLURAL[cat].toLowerCase() + " to show right now.";
-    $("nb-empty").hidden = total > 0;
+    var list = all.filter(function (n) { return cat === "all" || n.category === cat; });
+    var top = latest(list), rest = list.filter(function (n) { return top.indexOf(n) === -1; });
+    $("nb-latest").hidden = !top.length; fill("nb-latest-grid", top); fill("nb-grid", rest.slice(0, shown));
+    $("nb-rest").hidden = !rest.length;
+    $("nb-more").hidden = rest.length <= shown;
+    $("nb-state").hidden = list.length > 0;
+    $("nb-state").textContent = "No " + (cat === "all" ? "opportunities" : CATS[cat].toLowerCase()) + " to show right now. Check back soon.";
   }
-
-  function chips() {
-    var box = $("nb-chips"); box.textContent = "";
-    [["all", "All"]].concat(ORDER.map(function (k) { return [k, PLURAL[k]]; })).forEach(function (p) {
-      var b = el("button", "chip", p[1]); b.type = "button"; b.setAttribute("aria-pressed", p[0] === cat);
-      b.addEventListener("click", function () {
-        cat = p[0]; Array.prototype.forEach.call(box.children, function (x) { x.setAttribute("aria-pressed", x === b); }); render();
-      });
+  function pills() {
+    var box = $("nb-pills");
+    [["all", "All"]].concat(Object.keys(CATS).map(function (k) { return [k, CATS[k]]; })).forEach(function (p) {
+      var b = el("button", "pill", p[1]); b.type = "button"; b.setAttribute("aria-pressed", p[0] === cat);
+      b.addEventListener("click", function () { cat = p[0]; shown = PAGE; Array.prototype.forEach.call(box.children, function (x) { x.setAttribute("aria-pressed", x === b); }); render(); });
       box.appendChild(b);
     });
   }
-
-  async function init() {
-    if (!A.ok) { gate("The notice board isn't connected to its database yet. Add your Supabase details to assets/js/supabase-config.js."); return; }
-    var user = await A.getUser();
-    if (!user) { window.location.replace("signin.html?next=noticeboard.html"); return; }
-    var profile = await A.getProfile(user);
-    if (profile && profile.full_name) $("nb-title").textContent = "Welcome, " + profile.full_name;
-    if (profile && profile.role === "admin") {
-      $("nb-admin").hidden = false;
-      $("nb-title").textContent = "Welcome Admin";
-      $("nb-lead").textContent = "Keep track of jobs, funding, programmes and events from across the ecosystem.";
-    }
-    var r = await A.sb.from("notices").select("*").order("pinned", { ascending: false }).order("created_at", { ascending: false });
-    if (r.error) { gate("We couldn't load the notices. Please refresh and try again."); return; }
-    all = r.data || [];
-    $("nb-app").hidden = false; chips(); render();
-    $("nb-q").addEventListener("input", function (e) { q = e.target.value.trim(); render(); });
+  function fail() {
+    var local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+    $("nb-state").hidden = false;
+    $("nb-state").textContent = local ? "The live feed runs on Vercel, so it isn't available in Live Server. Run \"npx vercel dev\" in the project folder, or set window.NICER_API_BASE in noticeboard.html." : "We couldn't load opportunities just now. Please refresh in a moment.";
   }
-  init();
+  pills();
+  $("nb-more").addEventListener("click", function () { shown += PAGE; render(); });
+  fetch(API).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (d) {
+    all = d.items || []; $("nb-updated").textContent = "Updated " + fmt(d.updated) + ". "; render();
+  }).catch(fail);
 })();
