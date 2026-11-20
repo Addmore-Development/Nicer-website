@@ -79,5 +79,17 @@
 
   show(window.location.hash === "#create" ? "p-up" : "p-in");
   if (recovering) { show("p-reset"); return; }
-  A.getUser().then(function (u) { if (u) window.location.replace(next); });
+  A.getUser().then(function (u) {
+    if (!u) return;
+    /* Sent here by a page that needs a login: carry on to it. */
+    if (new URLSearchParams(window.location.search).get("next")) { window.location.replace(next); return; }
+    /* Otherwise show who is signed in instead of silently skipping the page. */
+    panels.forEach(function (p) { $(p).hidden = true; }); tabs.hidden = true;
+    var box = document.createElement("div");
+    var p = document.createElement("p"); p.textContent = "You're signed in as " + (u.email || "your account") + "."; box.appendChild(p);
+    var go = document.createElement("a"); go.className = "btn btn--primary"; go.href = next; go.textContent = "Continue to the Notice Board"; box.appendChild(go);
+    var out = document.createElement("button"); out.type = "button"; out.className = "btn btn--outline"; out.style.marginLeft = "10px"; out.textContent = "Sign out";
+    out.addEventListener("click", function () { A.signOut(); }); box.appendChild(out);
+    $("p-in").parentNode.appendChild(box);
+  });
 })();
