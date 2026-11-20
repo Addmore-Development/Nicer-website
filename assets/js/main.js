@@ -134,6 +134,32 @@
     });
   }
 
+
+  /* ---------- partner logos: use assets/partners/<slug>.(svg|png|webp|jpg) when the file exists, otherwise keep the text name ---------- */
+  var selfScript = doc.querySelector('script[src*="assets/js/main.js"]'), base = selfScript ? selfScript.getAttribute("src").replace(/assets\/js\/main\.js.*$/, "") : "";
+  Array.prototype.forEach.call(doc.querySelectorAll("[data-logo]"), function (slot) {
+    var slug = slot.getAttribute("data-logo"), exts = ["svg", "png", "webp", "jpg", "jpeg", "gif", "avif"], name = slot.textContent.trim();
+    (function tryNext(i) {
+      if (i >= exts.length) return;
+      var img = new Image(); img.alt = name; img.decoding = "async";
+      img.onload = function () { slot.insertBefore(img, slot.firstChild); slot.classList.add("has-logo"); };
+      img.onerror = function () { tryNext(i + 1); };
+      img.src = base + "assets/partners/" + slug + "." + exts[i];
+    })(0);
+  });
+
+  /* ---------- ensure the News & Events link exists in the header, mobile menu and footer ---------- */
+  (function () {
+    var root = (selfScript ? selfScript.getAttribute("src").replace(/assets\/js\/main\.js.*$/, "") : ""), label = "News & Events", href = root + "news.html";
+    function after(ref, make) { if (ref && ref.parentNode) ref.parentNode.insertBefore(make(), ref.nextSibling); }
+    var d = doc.querySelector('.nav-item > a.nav-link[href$="partners.html"]');
+    if (d && !doc.querySelector('.nav-item > a.nav-link[href$="news.html"]')) after(d.parentNode, function () { var li = doc.createElement("li"), a = doc.createElement("a"); li.className = "nav-item"; a.className = "nav-link"; a.href = href; a.textContent = label; li.appendChild(a); return li; });
+    var m = doc.querySelector('a.m-top[href$="partners.html"]');
+    if (m && !doc.querySelector('a.m-top[href$="news.html"]')) after(m, function () { var a = doc.createElement("a"); a.className = "m-top"; a.href = href; a.textContent = label; return a; });
+    var f = doc.querySelector('footer li > a[href$="partners.html"]');
+    if (f && !doc.querySelector('footer li > a[href$="news.html"]')) after(f.parentNode, function () { var li = doc.createElement("li"), a = doc.createElement("a"); a.href = href; a.textContent = label; li.appendChild(a); return li; });
+  })();
+
   /* ---------- footer year ---------- */
   Array.prototype.forEach.call(doc.querySelectorAll("[data-year]"), function (el) { el.textContent = new Date().getFullYear(); });
 })();

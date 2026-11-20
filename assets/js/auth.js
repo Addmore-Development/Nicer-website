@@ -49,6 +49,7 @@
 
   window.NicerAuth = { ok: ok, sb: sb, toast: toast, getUser: getUser, getProfile: getProfile,
     signOut: signOut, safeUrl: safeUrl, el: el, fmtDate: fmtDate,
-    categories: { job: "Job", funding: "Funding", programme: "Programme", event: "Event", announcement: "Announcement" },
+    categories: { job: "Job", funding: "Funding", learnership: "Learnership", scholarship: "Scholarship", bursary: "Bursary", programme: "Programme", event: "Event", announcement: "Announcement" },
+    plural: { job: "Jobs", funding: "Funding", learnership: "Learnerships", scholarship: "Scholarships", bursary: "Bursaries", programme: "Programmes", event: "Events", announcement: "Announcements" },
     ready: ok ? wireNav() : Promise.resolve() };
 })();

@@ -277,7 +277,7 @@ body.nav-lock{overflow:hidden}
 .partners__in{display:grid;grid-template-columns:200px 1fr;gap:20px 48px;align-items:center;padding-block:36px}
 .partners__label{margin:0;font-size:var(--fs-small);line-height:1.45;color:var(--muted);font-weight:600}
 .partners__list{display:flex;flex-wrap:wrap;gap:12px 34px;align-items:center}
-.partner{display:inline-flex;align-items:center;min-height:40px}
+.partner{position:relative;display:inline-flex;align-items:center;min-height:40px}
 .partner img{height:40px;width:auto;max-width:150px;object-fit:contain;filter:grayscale(1) contrast(.9);opacity:.75;transition:filter .25s,opacity .25s}
 .partner:hover img{filter:none;opacity:1}
 .partner span{font-weight:700;font-size:.9688rem;color:var(--navy-800);opacity:.62;letter-spacing:-.005em;transition:opacity .2s}
@@ -604,3 +604,36 @@ body.nav-lock{overflow:hidden}
 .mega__foot strong{color:var(--ink)}
 .footer__test{margin:18px 0 0}
 .footer a.btn{color:var(--fg);text-decoration:none}
+
+/* ---------- mobile logo fix ----------
+   Phones with forced dark mode were turning the white header card dark grey, which hid the navy logo.
+   1) "only light" tells the browser not to auto-darken the site.
+   2) While the mobile menu is open the card is explicitly navy and switches to the white logo. */
+:root{color-scheme:only light}
+.brand__light{display:none}
+body.nav-lock .nav-card{background:var(--navy-800);box-shadow:0 18px 40px -18px rgba(0,0,0,.6)}
+body.nav-lock .brand__dark{display:none}
+body.nav-lock .brand__light{display:block}
+body.nav-lock .nav-toggle{background:rgba(255,255,255,.14)}
+@media (max-width:420px){.nav-card{padding-inline:18px 10px;gap:10px}}
+
+/* keep the desktop menu on one line now that it has seven items */
+.nav-link{white-space:nowrap}
+@media (min-width:1101px) and (max-width:1320px){
+  .nav-card{padding-inline:16px 12px;gap:10px}
+  .nav-list{gap:0}
+  .nav-link{padding:0 9px;font-size:.9rem;gap:5px}
+  .nav-link[aria-current="page"]::after,.nav-item.is-open>.nav-link::after{left:9px;right:9px}
+  .brand img{height:38px}
+  .nav-cta .btn{padding:0 14px;font-size:.875rem}
+}
+
+/* ---------- mobile header: always navy with the white logo ----------
+   Some Android browsers force dark mode and ignore "only light", which turned the white card grey and hid the navy logo.
+   A navy card with the white logo stays readable whether or not the browser darkens the page. */
+@media (max-width:1100px){
+  .nav-card{background:var(--navy-800);border:1px solid rgba(255,255,255,.14);box-shadow:0 14px 34px -16px rgba(2,24,48,.7)}
+  .brand img,.brand__dark,.brand__light{display:none!important}
+  .brand{width:182px;height:46px;background:url("../img/logo-light.png") no-repeat left center/contain}
+  .nav-toggle{background:rgba(255,255,255,.14)}
+}
