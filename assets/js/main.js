@@ -122,8 +122,7 @@
   }
 
   /* ---------- contact form: open the visitor's email app ---------- */
-  var form = doc.getElementById("contact-form");
-  if (form) {
+  function wireContactForm(form, after) {
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       var g = function (n) { return (form.elements[n] && form.elements[n].value || "").trim(); };
@@ -131,8 +130,83 @@
       var to = form.getAttribute("action").replace("mailto:", "");
       window.location.href = "mailto:" + to + "?subject=" + encodeURIComponent("Message from the NiCER website") + "&body=" + encodeURIComponent(body);
       say("Opening your email app…");
+      if (after) after();
     });
   }
+  var form = doc.getElementById("contact-form");
+  if (form) wireContactForm(form);
+
+  /* ---------- contact pop-up: any link to contact.html opens this instead of leaving the page ----------
+     Without JS or <dialog> support the links still go to contact.html, which stays as the fallback page. */
+  (function () {
+    var canModal = typeof HTMLDialogElement === "function" && typeof HTMLDialogElement.prototype.showModal === "function";
+    if (!canModal || /(^|\/)contact\.html$/.test(location.pathname)) return;   /* that page already shows the form */
+    var dlg, opener;
+    var MARKUP =
+      '<div class="cmodal__panel">' +
+      '<button class="cmodal__close" type="button" data-close aria-label="Close the contact form">' +
+        '<svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>' +
+      '<p class="cmodal__kicker">Contact</p>' +
+      '<h2 id="cmodal-title" tabindex="-1">Contact NiCER</h2>' +
+      '<p class="cmodal__lead">Thank you for your interest in the NiCER Network. Let’s stay connected.</p>' +
+      '<div class="contact cmodal__grid">' +
+        '<div class="contact__card"><h3>NiCER Network NPC</h3><dl class="kv">' +
+          '<div class="kv__row"><dt>Contact</dt><dd>Muimeleli Mutangwa<br>Chairperson, NiCER Network</dd></div>' +
+          '<div class="kv__row"><dt>Telephone</dt><dd><a href="tel:+27728957425">+27 72 895 7425</a></dd></div>' +
+          '<div class="kv__row"><dt>Email</dt><dd><a href="mailto:mutangwa@khoro.co.za">mutangwa@khoro.co.za</a></dd></div>' +
+          '<div class="kv__row"><dt>Head office</dt><dd>10 Clamant Road, Johannesburg, 2001, South Africa</dd></div>' +
+          '<div class="kv__row"><dt>LinkedIn</dt><dd>@NiCER</dd></div></dl></div>' +
+        '<form class="form" id="contact-modal-form" action="mailto:mutangwa@khoro.co.za" method="post" enctype="text/plain">' +
+          '<h3>Send a message</h3>' +
+          '<div class="form__row"><div class="field"><label for="cm-name">Full name</label><input id="cm-name" name="Name" autocomplete="name" required></div>' +
+            '<div class="field"><label for="cm-email">Email address</label><input id="cm-email" name="Email" type="email" autocomplete="email" required></div></div>' +
+          '<div class="form__row"><div class="field"><label for="cm-org">Organisation</label><input id="cm-org" name="Organisation" autocomplete="organization"></div>' +
+            '<div class="field"><label for="cm-role">I am</label><select id="cm-role" name="Role"><option>Choose a role</option><option>Companies and industry</option><option>Universities and research institutions</option><option>Postgraduate students and graduates</option><option>Entrepreneurs and start-ups</option><option>Government and public entities</option><option>Funders and investors</option><option>Professional bodies and SETAs</option><option>Communities</option><option>An ecosystem organisation</option><option>Something else</option></select></div></div>' +
+          '<div class="field"><label for="cm-msg">How can we work together?</label><textarea id="cm-msg" name="Message" required></textarea></div>' +
+          '<p class="form__note">Sending opens your email app with this message ready to send to mutangwa@khoro.co.za.</p>' +
+          '<div><button class="btn btn--primary" type="submit">Send message</button></div>' +
+        '</form>' +
+      '</div></div>';
+
+    function build() {
+      dlg = doc.createElement("dialog");
+      dlg.className = "cmodal";
+      dlg.setAttribute("aria-labelledby", "cmodal-title");
+      dlg.innerHTML = MARKUP;
+      doc.body.appendChild(dlg);
+      wireContactForm(dlg.querySelector("form"), function () { dlg.close(); });
+      dlg.addEventListener("click", function (e) {
+        if (e.target.closest("[data-close]")) { dlg.close(); return; }
+        /* backdrop click closes it, unless the visitor has started typing */
+        if (e.target === dlg) {
+          var typed = Array.prototype.some.call(dlg.querySelectorAll("input,textarea"), function (f) { return f.value.trim(); });
+          if (!typed) dlg.close();
+        }
+      });
+      dlg.addEventListener("close", function () {
+        doc.documentElement.classList.remove("cmodal-lock");
+        if (opener && opener.focus && doc.contains(opener)) opener.focus();
+      });
+    }
+    function open(from) {
+      if (!dlg) build();
+      opener = from || null;
+      closeAll(); closeMobile();
+      doc.documentElement.classList.add("cmodal-lock");
+      dlg.showModal();
+      /* wide screens: straight into the first field; phones: start at the top so the details are seen first */
+      var wide = window.matchMedia("(min-width: 901px)").matches;
+      dlg.querySelector(wide ? "#cm-name" : "#cmodal-title").focus({ preventScroll: true });
+      dlg.querySelector(".cmodal__panel").scrollTop = 0;
+    }
+    doc.addEventListener("click", function (e) {
+      var t = e.target.closest && e.target.closest('[data-contact], a[href$="contact.html"]');
+      if (!t) return;
+      if (e.defaultPrevented || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      open(t);
+    });
+  })();
 
 
   /* ---------- partner logos: use assets/partners/<slug>.(svg|png|webp|jpg) when the file exists, otherwise keep the text name ---------- */
