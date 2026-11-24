@@ -56,3 +56,10 @@ Body text is Montserrat (variable) and headings are Lato Bold 700, both self-hos
 - `GET /api/opportunities` also returns a `sources` list showing which feeds worked, so a dead feed is easy to spot.
 - Live Server (port 5500) cannot run `/api`. Test locally with `npx vercel dev`, or set `window.NICER_API_BASE` in `noticeboard.html` to your deployed URL.
 - `assets/js/noticeboard.js` and `assets/css/noticeboard.css` replace the old Supabase-based board.
+
+## Chatbot (AI assistant)
+A floating "Ask NiCER" chat on every public page. `assets/js/chatbot.js` is the widget (styles are in `styles.css`, section "Website chatbot"); `api/chat.js` is a Vercel serverless function that calls the Google Gemini API (free tier).
+- **Setup:** in Vercel > Project > Settings > Environment Variables add `GEMINI_API_KEY` (free key from aistudio.google.com > Get API key, no card needed), then redeploy. The key stays on the server and is never in the browser. Optional: `GEMINI_MODEL` (one model name or a comma-separated fallback list; check the Rate limit page in AI Studio for the models your key can use), `ALLOWED_ORIGINS`.
+- **What it knows:** `api/knowledge.txt`, generated from the site's pages. After you change page content run `node scripts/build-knowledge.js`, then redeploy.
+- **Guardrails:** answers only from the knowledge file, declines off-topic questions, links only to a fixed list of pages, 25 questions per visitor per 10 minutes, and falls back to the contact details if the AI is unavailable.
+- **Local testing:** like the Notice Board, `/api/chat` needs `npx vercel dev` (Live Server cannot run `/api`).
